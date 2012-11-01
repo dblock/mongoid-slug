@@ -313,7 +313,7 @@ module Mongoid
 
     context "when #slug is given a block" do
       let(:caption) do
-        Caption.create(:identity => "Edward Hopper (American, 1882-1967)",
+        Caption.create(:my_identity => "Edward Hopper (American, 1882-1967)",
                        :title    => "Soir Bleu, 1914",
                        :medium   => "Oil on Canvas")
       end
@@ -329,7 +329,7 @@ module Mongoid
       end
 
       it "does not change slug if slugged fields have changed but generated slug is identical" do
-        caption.identity = "Edward Hopper"
+        caption.my_identity = "Edward Hopper"
         caption.save
         caption.to_param.should eql "edward-hopper-soir-bleu-1914"
       end
@@ -367,26 +367,26 @@ module Mongoid
 
     context "when :index is passed as an argument" do
       before do
-        Book.collection.drop_indexes
-        Author.collection.drop_indexes
+        Book.remove_indexes
+        Author.remove_indexes
       end
 
       it "defines an index on the slug in top-level objects" do
         Book.create_indexes
-        Book.collection.index_information.should have_key "slug_1"
+        Book.index_options.should have_key( Book.slug_name => 1 )
       end
 
       context "when slug is scoped by a reference association" do
         it "defines a non-unique index" do
           Author.create_indexes
-          Author.index_information["slug_1"]["unique"].should be_false
+          Author.index_options[ Author.slug_name => 1 ][:unique].should be_false
         end
       end
 
       context "when slug is not scoped by a reference association" do
         it "defines a unique index" do
           Book.create_indexes
-          Book.index_information["slug_1"]["unique"].should be_true
+          Book.index_options[ Book.slug_name => 1 ][:unique].should be_true
         end
       end
     end
@@ -394,7 +394,7 @@ module Mongoid
     context "when :index is not passed as an argument" do
       it "does not define an index on the slug" do
         Person.create_indexes
-        Person.collection.index_information.should_not have_key "permalink_1"
+        Person.index_options.should_not have_key(:permalink_1 )
       end
     end
     

@@ -1,7 +1,7 @@
 class Caption
   include Mongoid::Document
   include Mongoid::Slug
-  field :identity
+  field :my_identity, :type => String
   field :title
   field :medium
 
@@ -11,7 +11,7 @@ class Caption
   #
   # We are only interested in the name of the artist so we remove the
   # paranthesized details.
-  slug :identity, :title do |doc|
-    [doc.identity.gsub(/\s*\([^)]+\)/, ''), doc.title].join(' ')
+  slug :my_identity, :title do |doc|
+    [doc.my_identity.gsub(/\s*\([^)]+\)/, ''), doc.title].join(' ')
   end
 end

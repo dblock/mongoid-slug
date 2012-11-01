@@ -79,8 +79,8 @@ module Mongoid
         end
 
         if options[:index]
-          index slug_name, :unique => !slug_scope
-          index slug_history_name if slug_history_name
+          index({}.tap { |h| h[slug_name] = 1 }, { :unique => !slug_scope })
+          index({}.tap { |h| h[slug_history_name] = 1 }) if slug_history_name
         end
 
         set_callback options[:permanent] ? :create : :save, :before do |doc|
