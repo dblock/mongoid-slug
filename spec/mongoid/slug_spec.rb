@@ -564,5 +564,15 @@ module Mongoid
         end
       end
     end
+
+    context "migration" do
+      it "updates _slugs when the record is saved" do
+        book = Book.create(:title => "A Thousand Plateaus")
+        Mongoid.default_session["books"].where({ :title => book.title }).update({ "$set" => { :_slugs => nil }})
+        book.reload[:_slugs].should be_nil
+        book.save!
+        book.reload[:_slugs].should == [ "a-thousand-plateaus" ]
+      end
+    end
   end
 end

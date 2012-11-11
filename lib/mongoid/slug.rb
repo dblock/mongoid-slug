@@ -86,6 +86,7 @@ module Mongoid
 
         set_callback options[:permanent] ? :create : :save, :before do |doc|
           doc.build_slug if doc.slug_should_be_rebuilt?
+          doc.copy_slug_to_slugs!
         end
 
         # Build a finder for slug.
@@ -295,6 +296,14 @@ module Mongoid
       end
 
       true
+    end
+
+    # update _slugs with the value of slug, migration
+    def copy_slug_to_slugs!
+      slugs_array = [ self.slug ]
+      unless self[:_slugs] == slugs_array
+        write_attribute :_slugs, slugs_array
+      end
     end
 
     # Finds a unique slug, were specified string used to generate a slug.
