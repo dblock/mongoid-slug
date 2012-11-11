@@ -54,21 +54,25 @@ module Mongoid
         subject.name = "Schizoanalysis"
         subject.save
         subject.to_param.should eql "schizoanalysis"
+        subject[:_slugs].should eql [ "schizoanalysis" ]
       end
 
       it "generates a unique slug by appending a counter to duplicate text" do
         dup = book.subjects.create(:name => subject.name)
         dup.to_param.should eql "psychoanalysis-1"
+        dup[:_slugs].should eql [ "psychoanalysis-1" ]
       end
 
       it "does not update slug if slugged fields have not changed" do
         subject.save
         subject.to_param.should eql "psychoanalysis"
+        subject[:_slugs].should eql [ "psychoanalysis" ]
       end
 
       it "does not change slug if slugged fields have changed but generated slug is identical" do
         subject.name = "PSYCHOANALYSIS"
         subject.to_param.should eql "psychoanalysis"
+        subject[:_slugs].should eql [ "psychoanalysis" ]
       end
 
       it "finds by slug" do
@@ -91,33 +95,39 @@ module Mongoid
 
       it "generates a slug" do
         partner.to_param.should eql "jane-smith"
+        partner[:_slugs].should eql [ "jane-smith" ]
       end
 
       it "updates the slug" do
         partner.name = "Jane Doe"
         partner.save
         partner.to_param.should eql "jane-doe"
+        partner[:_slugs].should eql [ "jane-doe" ]
       end
 
       it "generates a unique slug by appending a counter to duplicate text" do
         dup = relationship.partners.create(:name => partner.name)
         dup.to_param.should eql "jane-smith-1"
+        dup[:_slugs].should eql [ "jane-smith-1" ]
       end
 
       it "does not update slug if slugged fields have not changed" do
         partner.save
         partner.to_param.should eql "jane-smith"
+        partner[:_slugs].should eql [ "jane-smith" ]
       end
 
       it "does not change slug if slugged fields have changed but generated slug is identical" do
         partner.name = "JANE SMITH"
         partner.to_param.should eql "jane-smith"
+        partner[:_slugs].should eql [ "jane-smith" ]
       end
 
       it "scopes by parent object" do
         affair = person.relationships.create(:name => "Affair")
         lover = affair.partners.create(:name => partner.name)
         lover.to_param.should eql partner.to_param
+        lover[:_slugs].should eql [ partner.to_param ]
       end
 
       it "finds by slug" do
@@ -192,6 +202,7 @@ module Mongoid
         person.name = "Jane Doe"
         person.save
         person.to_param.should eql "john-doe"
+        person[:_slugs].should eql [ "john-doe" ]
       end
     end
 
@@ -286,6 +297,7 @@ module Mongoid
 
         it "allows using the slug" do
           subject2.slug.should == "a-subject"
+          subject2[:_slugs].should == [ "a-subject" ]
         end
 
         it "removes the slug from the old owner's history" do
@@ -397,27 +409,32 @@ module Mongoid
         Person.index_options.should_not have_key(:permalink_1 )
       end
     end
-    
+
     context "when :reserve is passed" do
       it "does not use the the reserved slugs" do
         friend1 = Friend.create(:name => "foo")
         friend1.slug.should_not eql("foo")
         friend1.slug.should eql("foo-1")
+        friend1[:_slugs].should == [ "foo-1" ]
 
         friend2 = Friend.create(:name => "bar")
         friend2.slug.should_not eql("bar")
         friend2.slug.should eql("bar-1")
+        friend2[:_slugs].should == [ "bar-1" ]
 
         friend3 = Friend.create(:name => "en")
         friend3.slug.should_not eql("en")
         friend3.slug.should eql("en-1")
+        friend3[:_slugs].should == [ "en-1" ]
       end
 
       it "should start with concatenation -1" do
         friend1 = Friend.create(:name => "foo")
         friend1.slug.should eql("foo-1")
+        friend1[:_slugs].should == [ "foo-1" ]
         friend2 = Friend.create(:name => "foo")
         friend2.slug.should eql("foo-2")
+        friend2[:_slugs].should == [ "foo-2" ]
       end
     end
 
@@ -426,6 +443,7 @@ module Mongoid
         book = Book.create(:title => "Anti Oedipus")
         comic_book = ComicBook.create(:title => "Anti Oedipus")
         comic_book.slug.should_not eql(book.slug)
+        comic_book[:_slugs].should_not == [ book.slug ]
       end
     end
 
@@ -433,6 +451,7 @@ module Mongoid
       it "should use accessor, not alias" do
         pseudonim  = Alias.create(:author_name => "Max Stirner")
         pseudonim.slug.should eql("max-stirner")
+        pseudonim[:_slugs].should == [ "max-stirner" ]
       end
     end
 
@@ -521,18 +540,19 @@ module Mongoid
           book = Book.create(:title => "A Thousand Plateaus", :slug => "not-what-you-expected")
           book.to_param.should eql "not-what-you-expected"
         end
-        
+
         it "ensures uniqueness" do
           book1 = Book.create(:title => "A Thousand Plateaus", :slug => "not-what-you-expected")
           book2 = Book.create(:title => "A Thousand Plateaus", :slug => "not-what-you-expected")
           book2.to_param.should eql "not-what-you-expected-1"
         end
-        
+
         it "updates the slug when a new one is passed in" do
           book = Book.create(:title => "A Thousand Plateaus", :slug => "not-what-you-expected")
           book.slug = "not-it-either"
           book.save
           book.to_param.should eql "not-it-either"
+          book[:_slugs].should == [ "not-it-either" ]
         end
       end
 
@@ -540,6 +560,7 @@ module Mongoid
         it "generate a new one" do
           book = Book.create(:title => "A Thousand Plateaus", :slug => "")
           book.to_param.should eql "a-thousand-plateaus"
+          book[:_slugs].should == [ "a-thousand-plateaus" ]
         end
       end
     end
