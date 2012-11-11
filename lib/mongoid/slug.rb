@@ -73,7 +73,7 @@ module Mongoid
         self.slug_builder = block_given? ? block : default_builder
 
         field slug_name
-        field :_slugs
+        field :_slugs, type: Array, default: []
 
         if slug_history_name
           field slug_history_name, :type => Array, :default => []
