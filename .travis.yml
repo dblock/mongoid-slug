@@ -1,29 +1,22 @@
-sudo: false
-
 language: ruby
 
-services: mongodb
-
-env:
-  - MONGOID_VERSION=3
-  - MONGOID_VERSION=4
-  - MONGOID_VERSION=5.0.0
-  - MONGOID_VERSION=5
-  - MONGOID_VERSION=HEAD
-
 rvm:
+  - 2.2.2
   - 2.3.1
+  - jruby-9.1.2.0
 
-before_install:
-  - gem update bundler
+gemfile:
+  - Gemfile
+
+services:
+- mongodb
 
 addons:
   apt:
     sources:
-      - mongodb-3.2-precise
+    - mongodb-3.2-precise
     packages:
-      - mongodb-org-server
+    - mongodb-org-server
 
-matrix:
-  allow_failures:
-    - env: MONGOID_VERSION=HEAD
+notifications:
+  email: false
