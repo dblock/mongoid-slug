@@ -1,5 +1,6 @@
 ## 7.1.0 (Next)
 
+* [#277](https://github.com/mongoid/mongoid-slug/pull/277): Migrate Danger to use danger-pr-comment workflow - [@dblock](https://github.com/dblock)
 * [#274](https://github.com/mongoid/mongoid-slug/pull/274): Added support for scoping slugs by multiple fields - [@mikekosulin](https://github.com/mikekosulin)
 * Your contribution here.
 
